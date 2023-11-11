@@ -50,6 +50,22 @@ CURRENT_BEST = 0
 # DIMENSIONS = [x, y]
 N_NODES = len(GRAPH.nodes)
 
+n = 40
+graph = [] 
+for i in range(n): 
+    vertex = [] 
+    for j in range(n): 
+        vertex.append(random.randint(0, 1)) 
+    graph.append(vertex) 
+for i in range(n): 
+    for j in range(0, i): 
+        graph[i][j] = graph[j][i] 
+for i in range(n): 
+    graph[i][i] = 0
+for v in graph: 
+    print(v) 
+
+
 def random_gen(GENELIST, n_colors, graph):
     for i in range(0,100):
         for i in graph.nodes:
@@ -88,12 +104,12 @@ def crossover_top_half():
         GENELIST[50+i], GENELIST[50+i+1] = crossover(GENELIST[i],GENELIST[i+1])
 
 def mutation(n_colors):
-    for j in range(len(GENELIST)):
-        probability = 0.2
+    probability = 0.2
+    for j in range(50,len(GENELIST)):
         for i in range(N_NODES):
             rand = random.uniform(0,1)
             if(rand <= probability):
-                GENELIST[j].node_colors = random.randint(1,n_colors+1)
+                GENELIST[j].node_colors[i] = random.randint(1,n_colors+1)
 
 def main():
     n_colors = N_NODES
@@ -101,16 +117,18 @@ def main():
     while(n_colors > 0):
         generation = 0
         random_gen(GENELIST,n_colors,GRAPH)
+        for i in GENELIST:
+            set_fitness(i)
+            if(i.fitness < CURRENT_BEST): CURRENT_BEST = i.fitness
         GENELIST.sort(key = lambda x: x.fitness)
-        CURRENT_BEST = set_fitness(GENELIST[0])
         #try until you find a n_colored solution or n_generations exceed 10k
         while(CURRENT_BEST != 0 and generation < 10000):
-            GENELIST.sort(key = lambda x: x.fitness)
             crossover_top_half(GRAPH)
             mutation(n_colors)
             for i in GENELIST:
                 set_fitness(i)
                 if(i.fitness < CURRENT_BEST): CURRENT_BEST = i.fitness
+            GENELIST.sort(key = lambda x: x.fitness)
             generation += 1
 
         if(CURRENT_BEST != 0): #even after 10k generations, n_colored solution couldn't be found
