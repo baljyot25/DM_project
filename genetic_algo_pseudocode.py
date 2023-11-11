@@ -1,6 +1,5 @@
 import random
-
-
+import copy
 
 class Graph:
     #collection of nodes
@@ -33,15 +32,12 @@ class Node:
         
         pass
 
-
-
 GENELIST = [] #solutions to solve
 GRAPH = Graph() #given by user to solve
 CURRENT_BEST = 0
 # DIMENSIONS = [x, y]
 N_NODES = 5
-
-
+num_graph_generated=10
 
 # for v in graph: 
 #     print(v) 
@@ -51,16 +47,22 @@ N_NODES = 5
 
 def random_gen(GENELIST, n_colors):
     print("random gen started")
-    for i in range(0,100):
+    l=[]
+    for i in range(0,num_graph_generated):#need to make 100
 
         GRAPH.node_colors=list()
+        l=list()
+
         for i in range(len(GRAPH.nodes)):
             rand=random.randint(1,n_colors)
             GRAPH.nodes[i].color=rand
-            GRAPH.node_colors.append(rand)
+            l.append(rand)
+        
+        GRAPH.node_colors=l.copy()
 
+        print(GRAPH.node_colors)
             
-        GENELIST.append(GRAPH)            
+        GENELIST.append(copy.deepcopy(GRAPH))          
 
 # def init(GENELIST):
 #     CURRENT_BEST = get_highest_degree(GRAPH)
@@ -71,43 +73,68 @@ def set_fitness(g):
         for node in g.nodes:
             for neighbor in node.neighbors:
                 
-                if g.nodes[neighbor].color == node.color:
+                if g.nodes[neighbor].color ==g.nodes[node].color:
                     g.fitness += 1
         print(g.fitness)
 
 def crossover(parent1,parent2):
     pivot = random.randint(2,N_NODES-2)
-    child1=Graph()
-    child2=Graph()
-    child1.nodes = child2.nodes = parent1.nodes
+    #everything is same apart from the colors
+    print("pivot",pivot)
+    
+    child1_new=[]
+    child2_new=[]
+
+    # child1.nodes = child2.nodes = parent1.nodes
     for i in range(pivot):
-        child1.node_colors[i] = parent1.node_colors[i]
-        child2.node_colors[i] = parent2.node_colors[i]
+        child1_new.append( parent1.node_colors[i])
+        child2_new.append(parent2.node_colors[i])
     
     for i in range (pivot, N_NODES):
-        child1.node_colors[i] = parent2.node_colors[i]
-        child2.node_colors[i] = parent1.node_colors[i]
+        child1_new.append(parent2.node_colors[i])
+        child2_new.append(parent1.node_colors[i])
+    # print("parents")
+    # print_graph(parent1)
+    # print_graph(parent2)
+    # print("childs")
+    # print_graph(child1)
+    # print_graph(child2)
 
-    return child1, child2
+    return copy.deepcopy(child1_new), copy.deepcopy(child2_new)
 
 def crossover_top_half():
+    print("crossover started")
     #size of graph is 100
-    for i in range(0,50,2):
-        GENELIST[50+i], GENELIST[50+i+1] = crossover(GENELIST[i],GENELIST[i+1])
+    for i in range(0,int(num_graph_generated/2),2):
+        print(int(num_graph_generated/2)+i+1)
+        if (int(num_graph_generated/2)+i+1>=num_graph_generated):
+            # print("edge case trigerred")
+            GENELIST[int(num_graph_generated/2)+i].nodes_color, not_used=crossover(GENELIST[0],GENELIST[i])
+        else:
+            GENELIST[int(num_graph_generated/2)+i].nodes_color, GENELIST[int(num_graph_generated/2)+i+1].nodes_color = crossover(GENELIST[i],GENELIST[i+1])
 
 def mutation(n_colors):
     probability = 0.2
-    for j in range(50,len(GENELIST)):
+    for j in range(int(num_graph_generated/2),len(GENELIST)):
+        print("before mutatiing", j)
+        print_graph(GENELIST[j])
         for i in range(N_NODES):
             rand = random.uniform(0,1)
             if(rand <= probability):
+                print("i have mutated")
                 GENELIST[j].node_colors[i] = random.randint(1,n_colors+1)
+                (GENELIST[j].nodes)[i].color=rand
+        print("AFter mutating")
+        print_graph(GENELIST[j])
 
 
-def print_graph():
+
+def print_graph(g):
     print("start graph printing")
-    for i in range(N_NODES):
-        print(GRAPH.nodes[i].neighbors)
+    # for i in g.matrix:
+    #     print(i)
+    # print("colors")
+    print(g.node_colors)
 def main():
     print("dnsfa")
     n = 5
@@ -118,8 +145,8 @@ def main():
         node.neighbors = [] 
         for j in range(n): 
             node.neighbors.append(random.randint(0, 1)) 
-        print("ok1")
-        print(node.neighbors)
+        # print("ok1")
+        # print(node.neighbors)
         
         GRAPH.nodes.append(node) 
     
@@ -135,16 +162,15 @@ def main():
         if sum((GRAPH.nodes)[i].neighbors) > max_num_colors: 
             max_num_colors = sum((GRAPH.nodes)[i].neighbors)+ 1
 
-    print(max_num_colors)
-
-    
+    # print(max_num_colors)
     n_colors = max_num_colors
 
-    print_graph()
-    print("start graph printing")
+    # print_graph()
+    # print("start graph printing")
     for i in range(N_NODES):
         GRAPH.matrix.append(GRAPH.nodes[i].neighbors)
-    print(GRAPH.matrix)
+    # print_graph(GRAPH)
+   
    
 
     while(n_colors > 0):
@@ -152,23 +178,43 @@ def main():
         generation = 0
         random_gen(GENELIST,n_colors)
         print(len(GENELIST))
+        for i in range(num_graph_generated):
+            print_graph(GENELIST[i])
         for i in range(len(GENELIST)):
             print(i,end=" ")
             set_fitness(GENELIST[i])
             if(GENELIST[i].fitness < CURRENT_BEST): CURRENT_BEST = GENELIST[i].fitness
+        print(CURRENT_BEST)
         GENELIST.sort(key = lambda x: x.fitness)
+        print("printing fitness after sort")
+        for i in range(num_graph_generated):
+            print(GENELIST[i].fitness)
         #try until you find a n_colored solution or n_generations exceed 10k
-        while(CURRENT_BEST != 0 and generation < 10000):
-            crossover_top_half(GRAPH)
-            mutation(n_colors)
-            for i in GENELIST:
-                set_fitness(i)
-                if(i.fitness < CURRENT_BEST): CURRENT_BEST = i.fitness
+        while(CURRENT_BEST != 0 and generation < 10):
+            print("printing graph before crossovver")
+            for i in range(num_graph_generated):
+                print_graph(GENELIST[i])
+            crossover_top_half()
+            print("crossover ended")
+            print("printing graph after crossovver")
+            for i in range(num_graph_generated):
+                print_graph(GENELIST[i])
+            
+            # mutation(n_colors)
+            # exit(0)
+            for i in range(len(GENELIST)):
+                print(i,end=" ")
+                set_fitness(GENELIST[i])
+                if(GENELIST[i].fitness < CURRENT_BEST): CURRENT_BEST =GENELIST[i].fitness
+            print(CURRENT_BEST)
             GENELIST.sort(key = lambda x: x.fitness)
+            print("printing fitness after sort")
+            for i in range(num_graph_generated):
+                print(GENELIST[i].fitness)
             generation += 1
-
+        exit(0)
         if(CURRENT_BEST != 0): #even after 10k generations, n_colored solution couldn't be found
-            print("The given graph is "+(n_colors+1)+" colourable")
+            print("The given graph is "+str(n_colors+1)+" colourable")
         else: #n_colored solution was found so we try to find a solution of the graph with n-1 colours
             n_colors -= 1
 
