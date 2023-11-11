@@ -1,10 +1,13 @@
 import random
 
+
+
 class Graph:
     #collection of nodes
     #first conflict node
     # root = Node()
     nodes = []
+
     node_colors = []
     fitness = 0
     vertices = 0
@@ -15,7 +18,7 @@ class Graph:
         for i in graph:
             self.nodes.add(i)
             for j in i:
-                self.nodes[i].neighbours.add(j)
+                self.nodes[i].neighbors.add(j)
 
 class Node:
     color = 0
@@ -27,50 +30,36 @@ class Node:
         pass
 
     def get_fitness(self, ideal):
-        #return #graph validity failed at how many places
-        #weighted fitness
-        #50% -> weightage : lesser the colors used
-        #50% -> weightage : validity
+        
         pass
 
-# def one_generation(MATRIX, GRAPH, n_colors):
-#     sort_graph(MATRIX, ideal) #sort on basis of fitness ONLY and not colors
-#     best_fitness_in_graph = MATRIX[0].fitness
-#     if fitness(CURRENT_BEST_GRAPH) == 0:
-#         return 1 #updated best graph
-#     else:
-#         remove_second_half(GRAPH)
-#         crossover(GRAPH)
-#         return 0
 
 
 GENELIST = [] #solutions to solve
 GRAPH = Graph() #given by user to solve
 CURRENT_BEST = 0
 # DIMENSIONS = [x, y]
-N_NODES = len(GRAPH.nodes)
-
-n = 40
-graph = [] 
-for i in range(n): 
-    vertex = [] 
-    for j in range(n): 
-        vertex.append(random.randint(0, 1)) 
-    graph.append(vertex) 
-for i in range(n): 
-    for j in range(0, i): 
-        graph[i][j] = graph[j][i] 
-for i in range(n): 
-    graph[i][i] = 0
-for v in graph: 
-    print(v) 
+N_NODES = 5
 
 
-def random_gen(GENELIST, n_colors, graph):
+
+# for v in graph: 
+#     print(v) 
+
+# def print_graph():
+
+
+def random_gen(GENELIST, n_colors):
     for i in range(0,100):
-        for i in graph.nodes:
-            graph.node_colors[i] = random.randint(1,n_colors+1)
-        GENELIST.append(graph)            
+
+        GRAPH.node_colors=list()
+        for i in range(len(GRAPH.nodes)):
+            rand=random.randint(1,n_colors)
+            GRAPH.nodes[i].color=rand
+            GRAPH.node_colors.append(rand)
+
+            
+        GENELIST.append(GRAPH)            
 
 # def init(GENELIST):
 #     CURRENT_BEST = get_highest_degree(GRAPH)
@@ -80,7 +69,8 @@ def random_gen(GENELIST, n_colors, graph):
 def set_fitness(g):
         for node in g.nodes:
             for neighbor in node.neighbors:
-                if neighbor.color == node.color:
+                
+                if g.nodes[neighbor].color == node.color:
                     g.fitness += 1
 
 def crossover(parent1,parent2):
@@ -111,12 +101,48 @@ def mutation(n_colors):
             if(rand <= probability):
                 GENELIST[j].node_colors[i] = random.randint(1,n_colors+1)
 
+
+def print_graph():
+    print("start graph printing")
+    for i in range(N_NODES):
+        print(GRAPH.nodes[i].neighbors)
 def main():
-    n_colors = N_NODES
+    print("dnsfa")
+    n = 5
+    GRAPH.nodes = [] 
+
+    for i in range(n):
+        node=Node() 
+        node.neighbors = [] 
+        for j in range(n): 
+            node.neighbors.append(random.randint(0, 1)) 
+        print("ok1")
+        print(node.neighbors)
+        
+        GRAPH.nodes.append(node) 
+    
+    for i in range(n): 
+        for j in range(0, i): 
+            (((GRAPH.nodes)[i]).neighbors)[j] = (((GRAPH.nodes)[j]).neighbors)[i]
+    for i in range(n): 
+        (((GRAPH.nodes)[i]).neighbors)[i]=0
+    
+
+    max_num_colors = 1
+    for i in range(n): 
+        if sum((GRAPH.nodes)[i].neighbors) > max_num_colors: 
+            max_num_colors = sum((GRAPH.nodes)[i].neighbors)+ 1
+
+    print(max_num_colors)
+
+    
+    n_colors = max_num_colors
+    print_graph()
+   
 
     while(n_colors > 0):
         generation = 0
-        random_gen(GENELIST,n_colors,GRAPH)
+        random_gen(GENELIST,n_colors)
         for i in GENELIST:
             set_fitness(i)
             if(i.fitness < CURRENT_BEST): CURRENT_BEST = i.fitness
@@ -136,5 +162,6 @@ def main():
         else: #n_colored solution was found so we try to find a solution of the graph with n-1 colours
             n_colors -= 1
 
-if __name__ == "_main_":
+if __name__ == "__main__":
+    print("djanf")
     main()
