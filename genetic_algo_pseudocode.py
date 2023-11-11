@@ -3,12 +3,14 @@ GENELIST = [] #solutions to solve
 GRAPH = Graph() #given by user to solve
 CURRENT_BEST = 0
 DIMENSIONS = [x, y]
-
+N_NODES=0
 class Graph:
     #collection of nodes
     #first conflict node
     root = Node()
+    nodes=set()
     fitness = 0
+    vertices=0
 
     def reset_visited_flag(self):
 
@@ -71,6 +73,24 @@ class Node:
         random_gen(GENELIST, CURRENT_BEST, GRAPH)
         #randomly fill the graph cells
 
+
+def crossover(parent1,parent2):
+    pivot =random.randint(2,N_NODES-2)
+    child1=Graph()
+    child2=Graph()
+    for i in range(pivot):
+        child1.nodes.add((parent1.nodes)[i])
+
+def crossover_top_half():
+    #size of graph is 100
+    for i in range(0,50,2):
+        parent1,parent2=GENELIST[i],GENELIST[i+1]
+
+        crossover(parent1,parent2)
+
+    
+
+
 def main():
     temp = 10000
     n_colors = graph.vertices
@@ -82,8 +102,15 @@ def main():
         #try until you find a n_colored solution or n_generations exceed 10k
         while(CURRENT_BEST != 0 and generation < 10000):
             GENELIST.sort(key = lambda x: x.fitness)
-            #eliminate_bottom_half()
-            #crossover_top_half()
+            if (GENELIST[0].fitness!=0):
+                #eliminate_bottom_half()
+                crossover_top_half(GRAPH)
+
+
+            else:
+                CURRENT_BEST=0
+                break
+            
             generation += 1
             pass
 
