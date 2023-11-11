@@ -1,10 +1,5 @@
 import random
 
-GENELIST = [] #solutions to solve
-GRAPH = Graph() #given by user to solve
-CURRENT_BEST = 0
-DIMENSIONS = [x, y]
-N_NODES=0
 class Graph:
     #collection of nodes
     #first conflict node
@@ -16,23 +11,11 @@ class Graph:
 
     # def reset_visited_flag(self):
 
-
-    def _init_(self, graph, vertices):
-        self.vertices = vertices
-        self.graph = graph
-
-    def set_fitness(self, GRAPH):
-        #har graph ke nodes
-        #nodes ke neighbour
-        #neighbor ke colors compare
-        #fitness += 1 if color is same
-        #lower fitness implies better solution
-        
-        for node in self.nodes:
-            for neighbor in node.neighbors:
-                if neighbor.color == node.color:
-                    self.fitness += 1
-            
+    def _init_(self, graph):
+        for i in graph:
+            self.nodes.add(i)
+            for j in i:
+                self.nodes[i].neighbours.add(j)
 
 class Node:
     color = 0
@@ -61,6 +44,12 @@ class Node:
 #         return 0
 
 
+GENELIST = [] #solutions to solve
+GRAPH = Graph() #given by user to solve
+CURRENT_BEST = 0
+# DIMENSIONS = [x, y]
+N_NODES = len(GRAPH.nodes)
+
 def random_gen(GENELIST, n_colors, graph):
     for i in range(0,100):
         for i in graph.nodes:
@@ -72,9 +61,14 @@ def random_gen(GENELIST, n_colors, graph):
 #     random_gen(GENELIST, CURRENT_BEST, GRAPH)
 #     #randomly fill the graph cells
 
+def set_fitness(g):
+        for node in g.nodes:
+            for neighbor in node.neighbors:
+                if neighbor.color == node.color:
+                    g.fitness += 1
 
 def crossover(parent1,parent2):
-    pivot = random.randint(2,len(GRAPH.nodes)-2)
+    pivot = random.randint(2,N_NODES-2)
     child1=Graph()
     child2=Graph()
     child1.nodes = child2.nodes = parent1.nodes
@@ -82,7 +76,7 @@ def crossover(parent1,parent2):
         child1.node_colors[i] = parent1.node_colors[i]
         child2.node_colors[i] = parent2.node_colors[i]
     
-    for i in range (pivot, len(GRAPH.nodes)):
+    for i in range (pivot, N_NODES):
         child1.node_colors[i] = parent2.node_colors[i]
         child2.node_colors[i] = parent1.node_colors[i]
 
@@ -96,28 +90,27 @@ def crossover_top_half():
 def mutation(n_colors):
     for j in range(len(GENELIST)):
         probability = 0.2
-        for i in range(len(GRAPH.nodes)):
+        for i in range(N_NODES):
             rand = random.uniform(0,1)
             if(rand <= probability):
                 GENELIST[j].node_colors = random.randint(1,n_colors+1)
 
 def main():
-    n_colors = len(GRAPH.nodes)
+    n_colors = N_NODES
 
     while(n_colors > 0):
         generation = 0
         random_gen(GENELIST,n_colors,GRAPH)
         GENELIST.sort(key = lambda x: x.fitness)
+        CURRENT_BEST = set_fitness(GENELIST[0])
         #try until you find a n_colored solution or n_generations exceed 10k
         while(CURRENT_BEST != 0 and generation < 10000):
             GENELIST.sort(key = lambda x: x.fitness)
-            if (GENELIST[0].fitness!=0):
-                crossover_top_half(GRAPH)
-                mutation(n_colors)
-            else:
-                CURRENT_BEST=0
-                break
-            
+            crossover_top_half(GRAPH)
+            mutation(n_colors)
+            for i in GENELIST:
+                set_fitness(i)
+                if(i.fitness < CURRENT_BEST): CURRENT_BEST = i.fitness
             generation += 1
 
         if(CURRENT_BEST != 0): #even after 10k generations, n_colored solution couldn't be found
