@@ -7,7 +7,7 @@ class Graph:
     #first conflict node
     # root = Node()
     nodes = []
-
+    matrix=[]
     node_colors = []
     fitness = 0
     vertices = 0
@@ -50,6 +50,7 @@ N_NODES = 5
 
 
 def random_gen(GENELIST, n_colors):
+    print("random gen started")
     for i in range(0,100):
 
         GRAPH.node_colors=list()
@@ -72,6 +73,7 @@ def set_fitness(g):
                 
                 if g.nodes[neighbor].color == node.color:
                     g.fitness += 1
+        print(g.fitness)
 
 def crossover(parent1,parent2):
     pivot = random.randint(2,N_NODES-2)
@@ -137,15 +139,23 @@ def main():
 
     
     n_colors = max_num_colors
+
     print_graph()
+    print("start graph printing")
+    for i in range(N_NODES):
+        GRAPH.matrix.append(GRAPH.nodes[i].neighbors)
+    print(GRAPH.matrix)
    
 
     while(n_colors > 0):
+        CURRENT_BEST=10000
         generation = 0
         random_gen(GENELIST,n_colors)
-        for i in GENELIST:
-            set_fitness(i)
-            if(i.fitness < CURRENT_BEST): CURRENT_BEST = i.fitness
+        print(len(GENELIST))
+        for i in range(len(GENELIST)):
+            print(i,end=" ")
+            set_fitness(GENELIST[i])
+            if(GENELIST[i].fitness < CURRENT_BEST): CURRENT_BEST = GENELIST[i].fitness
         GENELIST.sort(key = lambda x: x.fitness)
         #try until you find a n_colored solution or n_generations exceed 10k
         while(CURRENT_BEST != 0 and generation < 10000):
