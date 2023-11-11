@@ -60,11 +60,11 @@ class Node:
             return 0
 
 
-    def random_gen(genelist, n_colors, graph):
+    def random_gen(GENELIST, n_colors, graph):
         for i in range(0,100):
             for i in graph:
-                graph[i].color = random.randin(1,n_colors)
-            genelist.append(graph)            
+                graph[i].color = random.randint(1,n_colors)
+            GENELIST.append(graph)            
 
     def init(GENELIST):
         CURRENT_BEST = get_highest_degree(GRAPH)
@@ -77,11 +77,11 @@ def main():
 
     while(True and n_colors > 0):
         generation = 0
-        random_gen(genelist,n_colors,graph)
-        sort
+        random_gen(GENELIST,n_colors,graph)
+        GENELIST.sort(key = lambda x: x.fitness)
         #try until you find a n_colored solution or n_generations exceed 10k
         while(CURRENT_BEST != 0 and generation < 10000):
-            sort()
+            GENELIST.sort(key = lambda x: x.fitness)
             #eliminate_bottom_half()
             #crossover_top_half()
             generation += 1
