@@ -82,7 +82,7 @@ GENELIST = [] #solutions to solve
 GRAPH = Graph() #given by user to solve
 CURRENT_BEST = 0
 # DIMENSIONS = [x, y]
-N_NODES = 20
+N_NODES = 50
 num_graph_generated = 100
 
 def random_gen( n_colors):
@@ -239,7 +239,7 @@ def main():
     while(n_colors > 0):
         CURRENT_BEST=1e9
         generation = 0
-        # print("n_colors",n_colors)
+        print("n_colors",n_colors)
         global GENELIST
         GENELIST=list()
         GENELIST=random_gen(n_colors)
@@ -262,7 +262,7 @@ def main():
         # for i in range(num_graph_generated):
         #     print(GENELIST[i].fitness)
         #try until you find a n_colored solution or n_generations exceed 10k
-        while(CURRENT_BEST != 0 and generation < 100):
+        while(CURRENT_BEST != 0 and generation < 1000):
             # print("generation",generation,"color",n_colors)
             # print("printing graph before crossovver")
             # for i in range(num_graph_generated):
@@ -288,9 +288,9 @@ def main():
             #     print(GENELIST[i].fitness)
             generation += 1
         # print()
-        for i in range(len(GENELIST)):
-                # print(GENELIST[i].node_colors)
-                print(GENELIST[i].fitness,end=" ")
+        # for i in range(len(GENELIST)):
+        #         # print(GENELIST[i].node_colors)
+        #         print(GENELIST[i].fitness,end=" ")
         if(CURRENT_BEST==0):
             print("at least one colorable found")
             at_least_1_colorable=1
@@ -298,11 +298,10 @@ def main():
         
         if(CURRENT_BEST != 0 and at_least_1_colorable==1): #even after 10k generations, n_colored solution couldn't be found
             print("The given graph is "+str(n_colors+1)+" colourable")
-
             print(tem_graph.node_colors)
             plot_graph(tem_graph.matrix,tem_graph.node_colors)
-        
             break
+
         else: #n_colored solution was found so we try to find a solution of the graph with n-1 colours
             # at_least_1_colorable=1
             print("colors-1")
