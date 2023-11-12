@@ -20,7 +20,7 @@ def plot_graph(adjacency_matrix, color_array):
     num_nodes = len(adjacency_matrix)
     positions = np.array([[np.cos(2 * np.pi * i / num_nodes), np.sin(2 * np.pi * i / num_nodes)] for i in range(num_nodes)])
 
-    fig, ax = plt.subplots(figsize=(8, 8))  # Adjust the figure size as needed
+    fig, ax = plt.subplots(figsize=(20, 20))  # Adjust the figure size as needed
 
     # Plot edges
     for i in range(num_nodes):
@@ -36,12 +36,13 @@ def plot_graph(adjacency_matrix, color_array):
 
     # Plot nodes with labels
     for i in range(num_nodes):
-        ax.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7))
+        # ax.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7))
+        adjustText.adjust_text([plt.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7)) for i in range(num_nodes)])
 
     ax.axis('off')
     
     # Adjust label positions to avoid overlap
-    adjustText([plt.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7)) for i in range(num_nodes)])
+    
 
     plt.show()
 
@@ -82,7 +83,7 @@ GRAPH = Graph() #given by user to solve
 CURRENT_BEST = 0
 # DIMENSIONS = [x, y]
 N_NODES = 20
-num_graph_generated=100
+num_graph_generated = 100
 
 def random_gen( n_colors):
     print("random gen started")
