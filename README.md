@@ -39,3 +39,5 @@ The main flow of the program is that for every “maximum number of available co
 If the program finds a valid colouring of the graph using the specified “maximum number of available colours”, then we stop generating more generations of graphs using the specified “maximum number of available colours” and then set the “maximum number of available colours” to 1 lesser than its previous value.
 
 We continue this process till the time for a specified “maximum number of available colours”, the program is not able to find a valid colouring of the graph within 10000 generations. Then we terminate the program with the conclusion that a valid colouring of the graph exists with the chromatic number as 1 more than the current “maximum number of available colours”.
+
+[Note: The code will not run for graphs having number of nodes 3 or 2 or 1, because of our logic. We will have to hardcode it to make it run.]
