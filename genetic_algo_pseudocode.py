@@ -97,7 +97,7 @@ GENELIST = [] #solutions to solve
 GRAPH = Graph() #given by user to solve
 CURRENT_BEST = 0
 # DIMENSIONS = [x, y]
-N_NODES = 50
+N_NODES = 10
 num_graph_generated = 100
 
 def random_gen( n_colors):
@@ -209,20 +209,36 @@ def print_graph(g):
     # print("colors")
     print(g.node_colors)
 def main():
-    # print("dnsfa")
-    n = N_NODES
+    # print("dnsfa"
+    global N_NODES
     GRAPH.nodes = [] 
     # ma=[[0, 1, 1,1], [1, 0, 1, 1], [1, 1, 0, 0], [0, 1, 0, 0]]
-
-    for i in range(n):
-        node=Node() 
-        node.neighbors = [] 
-        for j in range(n): 
-            node.neighbors.append(random.randint(0,1)) 
-        # print("ok1")
-        # print(node.neighbors)
+    print("Do you want us to generate a random Graph(y/n) ")
+    if (input()=='y'):
+        print("Enter number of nodes in Graph : ",end=" ")
+       
+        n=int(input())
+        N_NODES=n
         
-        GRAPH.nodes.append(node) 
+        for i in range(n):
+            node=Node() 
+            node.neighbors = [] 
+            for j in range(n): 
+                node.neighbors.append(random.randint(0,1)) 
+            # print("ok1")
+            # print(node.neighbors)
+            
+            GRAPH.nodes.append(node) 
+    else:
+        print("Enter number of nodes in Graph : ",end=" ")
+        n=int(input())
+        N_NODES=n
+        for i in range(n):
+            node=Node()
+            node.neighbors=[]
+            for j in input().split(): 
+                node.neighbors.append(int(j)) 
+            GRAPH.nodes.append(node)
     
     for i in range(n): 
         for j in range(0, i): 
@@ -238,6 +254,7 @@ def main():
     # print("start graph printing")
     for i in range(N_NODES):
         GRAPH.matrix.append(GRAPH.nodes[i].neighbors)
+   
     # print_graph(GRAPH)
     max_num_colors = 0
     for i in range(n): 
