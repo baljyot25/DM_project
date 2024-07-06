@@ -176,7 +176,7 @@ def main():
     # Streamlit UI
     st.title("Graph Generator")
 
-    n = st.number_input("Enter number of nodes in Graph:", min_value=1, step=1)
+    n = st.number_input("Enter number of nodes in Graph:", min_value=4, step=1)
 
     generate_random_graph = st.radio("Do you want us to generate a random Graph?", ('Yes', 'No'))
     
