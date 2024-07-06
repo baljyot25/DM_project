@@ -2,7 +2,7 @@
 
 # How to Run the Code:
 
-1) To run the code via terminal, type "streamlit run <file-name>.py"
+1) To run the code via terminal, type "streamlit run AlgoAndFrontend.py"
 2) Upon starting, the code will ask for input for the number of nodes for the graph. The minimum number of nodes can be 4.
 3) The user can choose to generate a random graph containing the number of nodes as specified by the user in the previous step, or he/she can choose to input the adjacency matrix for the graph manually.
 
