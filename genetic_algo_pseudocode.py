@@ -4,7 +4,7 @@ import adjustText
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
-
+import plotly.graph_objects as go
 
 class Graph:
     nodes = []
@@ -67,38 +67,56 @@ def map_colors(color_indices):
     color_map = dict(zip(range(1, 101), distinct_colors))
     return [color_map[i] for i in color_indices]
 
-
-# Function to plot a graph from an adjacency matrix with node colors
 def plot_graph(adjacency_matrix, color_array):
     num_nodes = len(adjacency_matrix)
     positions = np.array(
-        [[np.cos(2 * np.pi * i / num_nodes), np.sin(2 * np.pi * i / num_nodes)] for i in range(num_nodes)])
+        [[np.cos(2 * np.pi * i / num_nodes), np.sin(2 * np.pi * i / num_nodes)] for i in range(num_nodes)]
+    )
 
-    fig, ax = plt.subplots(figsize=(20, 20))  # Adjust the figure size as needed
+    node_colors = map_colors(color_array)
 
-    # Plot edges
+    edge_x = []
+    edge_y = []
     for i in range(num_nodes):
         for j in range(i + 1, num_nodes):
             if adjacency_matrix[i][j] == 1:
-                ax.plot([positions[i, 0], positions[j, 0]], [positions[i, 1], positions[j, 1]], color='black')
+                edge_x.extend([positions[i, 0], positions[j, 0], None])
+                edge_y.extend([positions[i, 1], positions[j, 1], None])
 
-    # Map color indices to visually distinct colors
-    node_colors = map_colors(color_array)
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=1, color='#888'),
+        hoverinfo='none',
+        mode='lines'
+    )
 
-    # Plot nodes with specified colors
-    scatter = ax.scatter(positions[:, 0], positions[:, 1], color=node_colors, zorder=5)
+    node_x = positions[:, 0]
+    node_y = positions[:, 1]
 
-    # Plot nodes with labels
-    for i in range(num_nodes):
-        # ax.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7))
-        adjustText.adjust_text([plt.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center',
-                                         va='center', bbox=dict(facecolor='white', alpha=0.7)) for i in
-                                range(num_nodes)])
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers+text',
+        text=[str(i + 1) for i in range(num_nodes)],
+        textposition='bottom center',
+        marker=dict(
+            showscale=False,
+            color=node_colors,
+            size=10,
+            line_width=2
+        ),
+        hoverinfo='text'
+    )
 
-    ax.axis('off')
+    fig = go.Figure(data=[edge_trace, node_trace],
+                    layout=go.Layout(
+                        showlegend=False,
+                        hovermode='closest',
+                        margin=dict(b=20, l=5, r=5, t=40),
+                        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+                    ))
 
-    # Adjust label positions to avoid overlap
-    st.pyplot(plt)
+    st.plotly_chart(fig)
 
 
 def random_gen(n_colors):
