@@ -170,6 +170,9 @@ def main():
     global N_NODES
     GRAPH.nodes = []
 
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = 0
+
     # Streamlit UI
     st.title("Graph Generator")
 
@@ -189,11 +192,14 @@ def main():
                 
                 GRAPH.nodes.append(node) 
             st.success("Random graph generated successfully!")
+            for i in GRAPH.nodes: 
+                print(i.neighbors)
 
     elif generate_random_graph == 'No':
+        print("started self")
         neighbors_input = []
         for i in range(n):
-            neighbors = st.text_input(f"Enter neighbors for node {i+1} (space-separated 0 or 1 to indicate edges to other vertices):")
+            neighbors = st.text_input(f"Enter neighbors for node {i} (0-indexed):")
             neighbors_input.append(neighbors)
 
         if st.button("Submit Graph"):
@@ -201,11 +207,13 @@ def main():
             N_NODES=n
             for i in range(n):
                 node=Node()
-                node.neighbors=[]
+                node.neighbors=[0]*n
                 for j in neighbors_input[i].split(): 
-                    node.neighbors.append(int(j)) 
+                    node.neighbors[int(j)]=1
                 GRAPH.nodes.append(node)
             st.success("Graph submitted successfully!")
+            for i in GRAPH.nodes: 
+                    print(i.neighbors)
 
         
 
