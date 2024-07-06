@@ -2,9 +2,9 @@
 
 # How to Run the Code:
 
-1) To run the code using VS Code, you can click on the "run" button (if you have the Python Extension for VS Code installed)
-2) To run the code via terminal (Windows), you can type "python -u <file_path>".
-3) To run the code via terminal (Linux), you can type "python3 -u <file_path>".
+1) To run the code via terminal, type "streamlit run <file-name>.py"
+2) Upon starting, the code will ask for input for the number of nodes for the graph. The minimum number of nodes can be 4.
+3) The user can choose to generate a random graph containing the number of nodes as specified by the user in the previous step, or he/she can choose to input the adjacency matrix for the graph manually.
 
 
 # How does the code work?
@@ -36,8 +36,13 @@ Now, we repeat the process of calculating the fitness functions of all the graph
 
 The main flow of the program is that for every “maximum number of available colours” chosen, we try to find a valid colouring of the graph. 
 
-If the program finds a valid colouring of the graph using the specified “maximum number of available colours”, then we stop generating more generations of graphs using the specified “maximum number of available colours” and then set the “maximum number of available colours” to 1 lesser than its previous value.
+If the program finds a valid colouring of the graph using the specified “maximum number of available colours”, then we stop generating more generations of graphs using the specified “maximum number of 
+available colours” and then set the “maximum number of available colours” to 1 lesser than its previous value.
 
 We continue this process till the time for a specified “maximum number of available colours”, the program is not able to find a valid colouring of the graph within 10000 generations. Then we terminate the program with the conclusion that a valid colouring of the graph exists with the chromatic number as 1 more than the current “maximum number of available colours”.
 
 [Note: The code will not run for graphs having number of nodes 3 or 2 or 1, because of our logic. We will have to hardcode it to make it run.]
+
+# Results:
+
+![WhatsApp Image 2024-07-06 at 11 45 27_886b52c8](https://github.com/baljyot25/Graph-Colouring-using-Genetic-Algorithm/assets/101322330/0a34ee36-9374-49a1-bd8f-f027b0411573)
