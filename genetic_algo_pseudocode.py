@@ -3,37 +3,76 @@ import copy
 import adjustText
 import numpy as np
 import matplotlib.pyplot as plt
+import streamlit as st
+
+
+class Graph:
+    nodes = []
+    matrix = []
+    node_colors = []
+    fitness = 0
+    vertices = 0
+
+    def _init_(self, graph):
+        for i in graph:
+            self.nodes.add(i)
+            for j in i:
+                self.nodes[i].neighbors.add(j)
+
+
+class Node:
+    color = 0
+    neighbors = []
+    conflicts = 0
+    visited = False
+
+    def set_conflicts(self):
+        pass
+
+    def get_fitness(self, ideal):
+        pass
+
+
+# Global Variables
+GENE_LIST = []  # solutions to solve
+GRAPH = Graph()  # given by user to solve
+CURRENT_BEST = 0
+N_NODES = 50
+N_GRAPHS_GENERATED = 100
+
 
 def map_colors(color_indices):
     distinct_colors = [
-    '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-    '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
-    '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
-    '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5',
-    '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
-    '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173'
-]
-    
+        '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+        '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+        '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
+        '#c49c94', '#f7b6d2', '#c7c7c7', '#dbdb8d', '#9edae5',
+        '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#5254a3', '#637939', '#8c6d31', '#843c39', '#7b4173',
+        '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173'
+    ]
+
     color_map = dict(zip(range(1, 101), distinct_colors))
     return [color_map[i] for i in color_indices]
+
 
 # Function to plot a graph from an adjacency matrix with node colors
 def plot_graph(adjacency_matrix, color_array):
     num_nodes = len(adjacency_matrix)
-    positions = np.array([[np.cos(2 * np.pi * i / num_nodes), np.sin(2 * np.pi * i / num_nodes)] for i in range(num_nodes)])
+    positions = np.array(
+        [[np.cos(2 * np.pi * i / num_nodes), np.sin(2 * np.pi * i / num_nodes)] for i in range(num_nodes)])
 
     fig, ax = plt.subplots(figsize=(20, 20))  # Adjust the figure size as needed
 
@@ -52,293 +91,191 @@ def plot_graph(adjacency_matrix, color_array):
     # Plot nodes with labels
     for i in range(num_nodes):
         # ax.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7))
-        adjustText.adjust_text([plt.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center', va='center', bbox=dict(facecolor='white', alpha=0.7)) for i in range(num_nodes)])
+        adjustText.adjust_text([plt.text(positions[i, 0], positions[i, 1], str(i + 1), fontsize=12, ha='center',
+                                         va='center', bbox=dict(facecolor='white', alpha=0.7)) for i in
+                                range(num_nodes)])
 
     ax.axis('off')
-    
+
     # Adjust label positions to avoid overlap
-    
-
-    plt.show()
+    st.pyplot(plt)
 
 
-class Graph:
-    #collection of nodes
-    #first conflict node
-    # root = Node()
-    nodes = []
-    matrix=[]
-    node_colors = []
-    fitness = 0
-    vertices = 0
+def random_gen(n_colors):
+    print("[TASK] Starting random generation")
+    local = list()
+    for i in range(N_GRAPHS_GENERATED):
+        GRAPH.node_colors = list()
+        color_list = list()
 
-    # def reset_visited_flag(self):
-
-    def _init_(self, graph):
-        for i in graph:
-            self.nodes.add(i)
-            for j in i:
-                self.nodes[i].neighbors.add(j)
-
-class Node:
-    color = 0
-    neighbors = []
-    conflicts = 0
-    visited = False
-
-    def set_conflicts(self):
-        pass
-
-    def get_fitness(self, ideal):
-        
-        pass
-
-GENELIST = [] #solutions to solve
-GRAPH = Graph() #given by user to solve
-CURRENT_BEST = 0
-# DIMENSIONS = [x, y]
-N_NODES = 10
-num_graph_generated = 100
-
-def random_gen( n_colors):
-    print("random gen started")
-    l=[]
-    local=list()
-    for i in range(0,num_graph_generated):#need to make 100
-
-        GRAPH.node_colors=list()
-        l=list()
-        
-        temp_graph=copy.deepcopy(GRAPH)
-        # print("num_color:",n_colors)
-        # print("rand")
+        temp_graph = copy.deepcopy(GRAPH)
         for i in range(len(GRAPH.nodes)):
-            
-            rand=random.randint(1,n_colors)
-            # print(rand,end=" ")
-            temp_graph.nodes[i].color=rand
-            l.append(rand)
-        
-        temp_graph.node_colors=l.copy()
+            random_color = random.randint(1, n_colors)
+            temp_graph.nodes[i].color = random_color
+            color_list.append(random_color)
 
-        # print(temp_graph.node_colors)
-            
-        local.append((temp_graph))   
-        # print(local)
-    # print()
-    return local 
-         
+        temp_graph.node_colors = color_list.copy()
+        local.append(temp_graph)
 
-# def init(GENELIST):
-#     CURRENT_BEST = get_highest_degree(GRAPH)
-#     random_gen(GENELIST, CURRENT_BEST, GRAPH)
-#     #randomly fill the graph cells
+    return local
+
 
 def set_fitness(g):
-        g.fitness=0
-        for node in range(len(g.nodes)):
-            for i in range(len(g.matrix[0])):
-                if (g.matrix[node][i]==1):
-                    if (g.node_colors[node]==g.node_colors[i]):
-                        g.fitness+=1
-            
-        # print(g.fitness,end="  ")
+    g.fitness = 0
+    for node in range(len(g.nodes)):
+        for i in range(len(g.matrix[0])):
+            if g.matrix[node][i] == 1:
+                if g.node_colors[node] == g.node_colors[i]:
+                    g.fitness += 1
 
-def crossover(parent1,parent2):
-    pivot = random.randint(2,N_NODES-2)
-    #everything is same apart from the colors
-    # print("pivot",pivot)
-    
-    child1_new=list()
-    child2_new=list()
 
-    # child1.nodes = child2.nodes = parent1.nodes
+def crossover(parent1, parent2):
+    pivot = random.randint(2, N_NODES - 2)
+
+    child_1 = list()
+    child_2 = list()
+
     for i in range(pivot):
-        child1_new.append( parent1.node_colors[i])
-        child2_new.append(parent2.node_colors[i])
-    
-    for i in range (pivot, N_NODES):
-        child1_new.append(parent2.node_colors[i])
-        child2_new.append(parent1.node_colors[i])
-    # print("parents")
-    # print(parent1.node_colors)
-    # print(parent2.node_colors)
-    # print("childs")
-    # print(child1_new)
-    # print(child2_new)
-    
+        child_1.append(parent1.node_colors[i])
+        child_2.append(parent2.node_colors[i])
 
-    return child1_new, child2_new
+    for i in range(pivot, N_NODES):
+        child_1.append(parent2.node_colors[i])
+        child_2.append(parent1.node_colors[i])
+
+    return child_1, child_2
+
 
 def crossover_top_half():
-    # print("crossover started")
-    #size of graph is 100
-    for i in range(0,int(num_graph_generated/2),2):
-        # print(int(num_graph_generated/2)+i+1)
-        if (int(num_graph_generated/2)+i+1>=num_graph_generated):
-            # print("edge case trigerred")
-            GENELIST[int(num_graph_generated/2)+i].node_colors, not_used=crossover(GENELIST[0],GENELIST[i])
+    upper = N_GRAPHS_GENERATED // 2
+    for i in range(0, upper, 2):
+        if upper + i + 1 >= N_GRAPHS_GENERATED:  # edge case
+            GENE_LIST[upper + i].node_colors, not_used = crossover(GENE_LIST[0], GENE_LIST[i])
         else:
-            # print(GENELIST[int(num_graph_generated/2)+i].nodes_color, GENELIST[int(num_graph_generated/2)+i+1].nodes_color)
-            # GENELIST[int(num_graph_generated/2)+i].node_colors, GENELIST[int(num_graph_generated/2)+i+1].node_colors=[],[]
-            # print("len",len(GENELIST))
-            # print(int(num_graph_generated/2)+i)
-            GENELIST[int(num_graph_generated/2)+i].node_colors, GENELIST[int(num_graph_generated/2)+i+1].node_colors = crossover(GENELIST[i],GENELIST[i+1])
-            # print(GENELIST[int(num_graph_generated/2)+i].nodes_color, GENELIST[int(num_graph_generated/2)+i+1].nodes_color)
+            GENE_LIST[upper + i].node_colors, GENE_LIST[upper + i + 1].node_colors = crossover(GENE_LIST[i],
+                                                                                               GENE_LIST[i + 1])
+
 
 def mutation(n_colors):
     probability = 0.2
-    for j in range(int(num_graph_generated/2),len(GENELIST)):
-        # print("before mutatiing", j)
-        # print_graph(GENELIST[j])
+    for j in range(N_GRAPHS_GENERATED // 2, len(GENE_LIST)):
         for i in range(N_NODES):
-            rand = random.uniform(0,1)
-            if(rand <= probability):
-                # print("i have mutated")
-                GENELIST[j].node_colors[i] = random.randint(1,n_colors)
-                (GENELIST[j].nodes)[i].color=rand
-        # print("AFter mutating")
-        # print_graph(GENELIST[j])
+            random_color = random.uniform(0, 1)
+            if random_color <= probability:
+                GENE_LIST[j].node_colors[i] = random.randint(1, n_colors)
+                GENE_LIST[j].nodes[i].color = random_color
 
 
-
-def print_graph(g):
-    print("start graph printing")
-    # for i in g.matrix:
-    #     print(i)
-    # print("colors")
-    print(g.node_colors)
 def main():
-    # print("dnsfa"
     global N_NODES
-    GRAPH.nodes = [] 
-    # ma=[[0, 1, 1,1], [1, 0, 1, 1], [1, 1, 0, 0], [0, 1, 0, 0]]
-    print("Do you want us to generate a random Graph(y/n) ")
-    if (input()=='y'):
-        print("Enter number of nodes in Graph : ",end=" ")
-       
-        n=int(input())
-        N_NODES=n
-        
-        for i in range(n):
-            node=Node() 
-            node.neighbors = [] 
-            for j in range(n): 
-                node.neighbors.append(random.randint(0,1)) 
-            # print("ok1")
-            # print(node.neighbors)
-            
-            GRAPH.nodes.append(node) 
-    else:
-        print("Enter number of nodes in Graph : ",end=" ")
-        n=int(input())
-        N_NODES=n
-        for i in range(n):
-            node=Node()
-            node.neighbors=[]
-            for j in input().split(): 
-                node.neighbors.append(int(j)) 
-            GRAPH.nodes.append(node)
+    GRAPH.nodes = []
+
+    # Streamlit UI
+    st.title("Graph Generator")
+
+    n = st.number_input("Enter number of nodes in Graph:", min_value=1, step=1)
+
+    generate_random_graph = st.radio("Do you want us to generate a random Graph?", ('Yes', 'No'))
     
-    for i in range(n): 
-        for j in range(0, i): 
-            (((GRAPH.nodes)[i]).neighbors)[j] = (((GRAPH.nodes)[j]).neighbors)[i]
-    for i in range(n): 
-        (((GRAPH.nodes)[i]).neighbors)[i]=0
-    
-    # tem_graph
+    if generate_random_graph == 'Yes':
+        if st.button("Generate Random Graph"):
+            st.session_state['generated'] = 1
+            N_NODES=n
+            for i in range(n):
+                node=Node() 
+                node.neighbors = [] 
+                for j in range(n): 
+                    node.neighbors.append(random.randint(0,1))
+                
+                GRAPH.nodes.append(node) 
+            st.success("Random graph generated successfully!")
 
-   
+    elif generate_random_graph == 'No':
+        neighbors_input = []
+        for i in range(n):
+            neighbors = st.text_input(f"Enter neighbors for node {i+1} (space-separated 0 or 1 to indicate edges to other vertices):")
+            neighbors_input.append(neighbors)
 
-    # print_graph()
-    # print("start graph printing")
-    for i in range(N_NODES):
-        GRAPH.matrix.append(GRAPH.nodes[i].neighbors)
-   
-    # print_graph(GRAPH)
-    max_num_colors = 0
-    for i in range(n): 
-        if sum((GRAPH.matrix)[i]) > max_num_colors: 
-            max_num_colors = sum((GRAPH.matrix)[i])+ 1
+        if st.button("Submit Graph"):
+            st.session_state['generated'] = 1
+            N_NODES=n
+            for i in range(n):
+                node=Node()
+                node.neighbors=[]
+                for j in neighbors_input[i].split(): 
+                    node.neighbors.append(int(j)) 
+                GRAPH.nodes.append(node)
+            st.success("Graph submitted successfully!")
 
-    # print(max_num_colors)
-    n_colors = max_num_colors
-    # print(n_colors)
-   
-    # random_gen(n_colors)
-    at_least_1_colorable=0
-    # print(GRAPH.matrix)
-    while(n_colors > 0):
-        CURRENT_BEST=1e9
-        generation = 0
-        print("n_colors",n_colors)
-        global GENELIST
-        GENELIST=list()
-        GENELIST=random_gen(n_colors)
-        # for i in GENELIST:
-            
         
-        
-        # print(len(GENELIST))
-        # for i in range(num_graph_generated):
-        #     print_graph(GENELIST[i])
-        for i in range(len(GENELIST)):
-            # print(i,end=" ")
-            # print(GENELIST[i].node_colors)
-            set_fitness(GENELIST[i])
-            # print("fitness",GENELIST[i].fitness)
-            if(GENELIST[i].fitness < CURRENT_BEST): CURRENT_BEST = GENELIST[i].fitness
-        # print(CURRENT_BEST)
-        GENELIST.sort(key = lambda x: x.fitness)
-        # print("printing fitness after sort")
-        # for i in range(num_graph_generated):
-        #     print(GENELIST[i].fitness)
-        #try until you find a n_colored solution or n_generations exceed 10k
-        while(CURRENT_BEST != 0 and generation < 1000):
-            # print("generation",generation,"color",n_colors)
-            # print("printing graph before crossovver")
-            # for i in range(num_graph_generated):
-            #     print_graph(GENELIST[i])
-            crossover_top_half()
-            # print("crossover ended")
-            # print("printing graph after crossovver")
 
-            # for i in range(num_graph_generated):
-            #     print_graph(GENELIST[i])
-            
-            mutation(n_colors)
-            # exit(0)
-            for i in range(len(GENELIST)):
-                # print(i,end=" ")
-                set_fitness(GENELIST[i])
-                if(GENELIST[i].fitness < CURRENT_BEST): CURRENT_BEST =GENELIST[i].fitness
-            # print()
-            # print(CURRENT_BEST)
-            GENELIST.sort(key = lambda x: x.fitness)
-            # print("printing fitness after sort")
-            # for i in range(num_graph_generated):
-            #     print(GENELIST[i].fitness)
-            generation += 1
-        # print()
-        # for i in range(len(GENELIST)):
-        #         # print(GENELIST[i].node_colors)
-        #         print(GENELIST[i].fitness,end=" ")
-        if(CURRENT_BEST==0):
-            print("at least one colorable found")
-            at_least_1_colorable=1
-            tem_graph=GENELIST[0]
-        
-        if(CURRENT_BEST != 0 and at_least_1_colorable==1): #even after 10k generations, n_colored solution couldn't be found
-            print("The given graph is "+str(n_colors+1)+" colourable")
-            print(tem_graph.node_colors)
-            plot_graph(tem_graph.matrix,tem_graph.node_colors)
-            break
+    if st.session_state['generated']:
+        st.session_state['generated'] = 0
+        for i in range(n): 
+            for j in range(0, i): 
+                (((GRAPH.nodes)[i]).neighbors)[j] = (((GRAPH.nodes)[j]).neighbors)[i]
+        for i in range(n): 
+            (((GRAPH.nodes)[i]).neighbors)[i]=0
 
-        else: #n_colored solution was found so we try to find a solution of the graph with n-1 colours
-            # at_least_1_colorable=1
-            print("colors-1")
-            n_colors -= 1
-   
+        for i in range(N_NODES):
+            GRAPH.matrix.append(GRAPH.nodes[i].neighbors)
+
+        max_num_colors = 0
+        for i in range(n): 
+            if sum((GRAPH.matrix)[i]) > max_num_colors: 
+                max_num_colors = sum((GRAPH.matrix)[i])+ 1
+
+        n_colors = max_num_colors
+        at_least_1_colorable=0
+        while n_colors > 0:
+            CURRENT_BEST = 1e9
+            generation = 0
+            print("n_colors", n_colors)
+            global GENE_LIST
+            GENE_LIST = list()
+
+            # Generate gene_list using random generate function
+            GENE_LIST = random_gen(n_colors)
+
+            # Set fitness of each graph in the Gene List
+            for i in range(len(GENE_LIST)):
+                set_fitness(GENE_LIST[i])
+                if GENE_LIST[i].fitness < CURRENT_BEST:
+                    CURRENT_BEST = GENE_LIST[i].fitness
+
+            # Sort the GeneList on basis of the fitness of each graph
+            GENE_LIST.sort(key=lambda x: x.fitness)
+
+            # Try until you find a n_colored solution or n_generations exceed 10k
+            while CURRENT_BEST != 0 and generation < 1000:
+                crossover_top_half()
+                mutation(n_colors)
+                for i in range(len(GENE_LIST)):
+                    set_fitness(GENE_LIST[i])
+                    if GENE_LIST[i].fitness < CURRENT_BEST:
+                        CURRENT_BEST = GENE_LIST[i].fitness
+
+                GENE_LIST.sort(key=lambda x: x.fitness)
+                generation += 1
+
+            if CURRENT_BEST == 0:
+                print("At least one colorable found")
+                at_least_1_colorable = True
+                tem_graph = GENE_LIST[0]
+
+            # Even after 10k Generations, n_colored solution couldn't be found
+            if CURRENT_BEST != 0 and at_least_1_colorable:
+                st.subheader("Output:")
+                st.write("The given graph is " + str(n_colors + 1) + " colourable")
+                print(tem_graph.node_colors)
+                plot_graph(tem_graph.matrix, tem_graph.node_colors)
+                break
+
+            else:  # n_colored solution was found so we try to find a solution of the graph with n-1 colours
+                # at_least_1_colorable=True
+                print("colors-1")
+                n_colors -= 1
+
+
 if __name__ == "__main__":
-    print("djanf")
     main()
